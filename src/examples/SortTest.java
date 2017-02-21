@@ -13,6 +13,7 @@ import java.util.Random;
 public class SortTest {
 	
 	public static long cnt;
+	static int [] b;
 	/**
 	 * @param a int aray
 	 * @return 'true' if 'a' is sorted 
@@ -41,6 +42,27 @@ public class SortTest {
 		}
 	}
 
+	public static void mergeSort(int [] a){
+		b = new int[a.length];
+		mSort(a,0,a.length-1);
+	}
+
+	private static void mSort(int[] a, int from, int to) {
+		if (from==to) return;
+		int med = (from+to)/2;
+		mSort(a,from,med);
+		mSort(a,med+1,to);
+		merge(a,from,med,to);
+	}
+
+	private static void merge(int[] a, int from, int med, int to) {
+		// precondition:
+		// a[from..med] and a[med+1..to] are already sorted (each)
+		// postcondition: 
+		// a[from..to] is sorted
+		// .............
+	}
+
 	/**
 	 * swap the array elements a[i] and a[k]
 	 * @param a int array 
@@ -56,7 +78,7 @@ public class SortTest {
 
 	public static void main(String[] args) {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
-		int n = 50000;
+		int n = 100000;
 		// we need a random generator
 		Random rand=new Random(Integer.MAX_VALUE);
 		rand.setSeed(8237493); // initialize always in the same state
@@ -82,7 +104,7 @@ public class SortTest {
 		System.out.println("CPU-Time usage: "+time/1000000.0+" ms");
 		System.out.println("elapsed time: "+eTime/1e6+" ms");
 		System.out.println("sorted? "+sortCheck(a));
-		System.out.println("swap operation needed: "+cnt);		
+		System.out.println("swap operations needed: "+cnt);		
 		// ok
 	}
 
