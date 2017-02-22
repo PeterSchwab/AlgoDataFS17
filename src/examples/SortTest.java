@@ -60,7 +60,22 @@ public class SortTest {
 		// a[from..med] and a[med+1..to] are already sorted (each)
 		// postcondition: 
 		// a[from..to] is sorted
-		// .............
+		int left=from,right=med+1,i=from;
+		while (true){
+			// finished?
+			if (left>med) break;
+			if (right>to) {
+				// copy reminding elements from left part:
+				while (left<=med)b[i++]=a[left++]; 
+				break;		
+			}
+			// not finished. So copy the smaller of the 
+			// two parts to 'b'
+			if (a[left]<=a[right]) b[i++] = a[left++];
+			else b[i++]=a[right++];		
+		}
+		//copy back from 'b' to 'a'
+		while(i>from) a[--i]=b[i];
 	}
 
 	/**
@@ -78,7 +93,7 @@ public class SortTest {
 
 	public static void main(String[] args) {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
-		int n = 100000;
+		int n = 10000000;
 		// we need a random generator
 		Random rand=new Random(Integer.MAX_VALUE);
 		rand.setSeed(8237493); // initialize always in the same state
@@ -95,7 +110,7 @@ public class SortTest {
 		// get Time
 		te1=System.nanoTime();
 		t1 = threadBean.getCurrentThreadCpuTime();
-		bubbleSort(a);
+		mergeSort(a);
 		te2 = System.nanoTime();
 		t2 = threadBean.getCurrentThreadCpuTime();
 		time=t2-t1;
@@ -104,7 +119,7 @@ public class SortTest {
 		System.out.println("CPU-Time usage: "+time/1000000.0+" ms");
 		System.out.println("elapsed time: "+eTime/1e6+" ms");
 		System.out.println("sorted? "+sortCheck(a));
-		System.out.println("swap operations needed: "+cnt);		
+//		System.out.println("swap operations needed: "+cnt);		
 		// ok
 	}
 
