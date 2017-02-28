@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public class SortTest {
 	
-	public static long cnt;
+	public static long cnt,cnt2;
 	static int [] b;
 	/**
 	 * @param a int aray
@@ -43,19 +43,21 @@ public class SortTest {
 	}
 
 	public static void mergeSort(int [] a){
+		cnt=0;
 		b = new int[a.length];
 		mSort(a,0,a.length-1);
 	}
 
 	private static void mSort(int[] a, int from, int to) {
 		if (from==to) return;
-		int med = (from+to)/2;
+		int med = from +(to-from)/4;
 		mSort(a,from,med);
 		mSort(a,med+1,to);
 		merge(a,from,med,to);
 	}
 
 	private static void merge(int[] a, int from, int med, int to) {
+		// System.out.println("merge: "+from+", "+med+", "+to);
 		// precondition:
 		// a[from..med] and a[med+1..to] are already sorted (each)
 		// postcondition: 
@@ -66,16 +68,22 @@ public class SortTest {
 			if (left>med) break;
 			if (right>to) {
 				// copy reminding elements from left part:
-				while (left<=med)b[i++]=a[left++]; 
+				cnt2 += (med-left);
+				while (left<=med){
+					b[i++]=a[left++];
+				}
 				break;		
 			}
 			// not finished. So copy the smaller of the 
 			// two parts to 'b'
 			if (a[left]<=a[right]) b[i++] = a[left++];
-			else b[i++]=a[right++];		
+			else b[i++]=a[right++];
+			//cnt2++;
 		}
 		//copy back from 'b' to 'a'
+		cnt+=(i-from);
 		while(i>from) a[--i]=b[i];
+		
 	}
 
 	/**
@@ -95,7 +103,7 @@ public class SortTest {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
 		int n = 10000000;
 		// we need a random generator
-		Random rand=new Random(Integer.MAX_VALUE);
+		Random rand=new Random();
 		rand.setSeed(8237493); // initialize always in the same state
 		ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();	
 		// new array
@@ -120,6 +128,8 @@ public class SortTest {
 		System.out.println("elapsed time: "+eTime/1e6+" ms");
 		System.out.println("sorted? "+sortCheck(a));
 //		System.out.println("swap operations needed: "+cnt);		
+		System.out.println("merge compaires needed: "+(cnt-cnt2));		
+		System.out.println("merge copy only needed: "+cnt2);		
 		// ok
 	}
 
