@@ -62,7 +62,7 @@ public class MyTree<E> implements Tree<E> {
 	@Override
 	public Iterator<Position<E>> childrenPositions(Position<E> parent) {
 		return new Iterator<Position<E>>(){
-			Position<TNode> current = (Position<TNode>)checkAndCast(parent).children.first();
+			Position<TNode> current = checkAndCast(parent).children.first();
 			@Override
 			public boolean hasNext() {
 				return current!=null;
@@ -114,8 +114,13 @@ public class MyTree<E> implements Tree<E> {
 
 	@Override
 	public Position<E> addSiblingAfter(Position<E> sibling, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		TNode ns = checkAndCast(sibling);
+		TNode n = new TNode();
+		n.elem = o;
+		n.myChildrenPos = ns.parent.children.insertAfter(ns.myChildrenPos, n);
+		n.parent = ns.parent;
+		size++;
+		return n;
 	}
 
 	@Override
