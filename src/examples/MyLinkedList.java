@@ -1,6 +1,7 @@
 package examples;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class MyLinkedList<E> implements List<E> {
 
@@ -60,8 +61,7 @@ public class MyLinkedList<E> implements List<E> {
 
 	@Override
 	public Position<E> previous(Position<E> p) {
-		// TODO Auto-generated method stub
-		return null;
+		return checkAndCast(p).prev;
 	}
 
 	@Override
@@ -100,20 +100,47 @@ public class MyLinkedList<E> implements List<E> {
 
 	@Override
 	public Position<E> insertAfter(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LNode np = checkAndCast(p);
+		LNode n = new LNode();
+		n.elem = o;
+		
+		// chain: (n after np)
+		n.prev = np;
+		n.next = np.next;
+		np.next = n;
+		if (np==last) last=n;
+		else n.next.prev=n;
+		
+		size++;
+		return n;
 	}
 
 	@Override
 	public void remove(Position<E> p) {
-		// TODO Auto-generated method stub
-
+		LNode n = checkAndCast(p);
+		if (n==first) first = n.next;
+		else n.prev.next=n.next;
+		if (n==last) last = n.prev;
+		else n.next.prev = n.prev;
+		n.creator = null; // invalidate n 
+		size--;
 	}
 
 	@Override
 	public Iterator<Position<E>> positions() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<Position<E>>(){
+			LNode current = first;
+			@Override
+			public boolean hasNext() {
+				return current!=null;
+			}
+
+			@Override
+			public Position<E> next() {
+				LNode n = current;
+				current = current.next;
+				return n;
+			}};
 	}
 
 	@Override
@@ -124,8 +151,7 @@ public class MyLinkedList<E> implements List<E> {
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	@Override
@@ -137,16 +163,18 @@ public class MyLinkedList<E> implements List<E> {
 	public static void main(String[] args) {
 		List<String> list1 = new MyLinkedList<>(); 
 		List<String> list2 = new MyLinkedList<>();
-		Position p1 = list1.insertFirst("hans");
-		Position p2 = list1.insertFirst("beat");
-		
-		list1.insertFirst("susi");
-		Position p3 = list1.first();
-		while (p3!=null){
-			System.out.println(p3.element());
-			p3=list1.next(p3);
+		Position<String> p1 = list1.insertFirst("hans");
+		Position<String> p2 = list1.insertFirst("beat");
+		Position<String> p3 = list1.insertFirst("susi");
+		Position<String> pi = list1.first();
+		list1.insertAfter(p2,"beat2");
+		list1.insertAfter(p1,"hans2");
+		while (pi!=null){
+			System.out.println(pi.element());
+			pi=list1.next(pi);
 		}
-		
+		System.out.println("last: "+list1.last().element());
+	
 	}
-
+	
 }
