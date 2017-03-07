@@ -88,14 +88,35 @@ public class MyLinkedList<E> implements List<E> {
 
 	@Override
 	public Position<E> insertLast(E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LNode n =new LNode();
+		n.elem = o;
+		if (size==0){
+			last=first=n;
+		}
+		else {
+		 last.next=n;
+		 n.prev=last;
+		 last=n;
+		}
+		size++;
+		return n;
 	}
 
 	@Override
 	public Position<E> insertBefore(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LNode np = checkAndCast(p);
+		LNode n = new LNode();
+		n.elem = o;
+		
+		// chain: (n before np)
+		n.next = np;
+		n.prev = np.prev;
+		np.prev = n;
+		if (np==first) first=n;
+		else n.prev.next=n;
+		
+		size++;
+		return n;
 	}
 
 	@Override
