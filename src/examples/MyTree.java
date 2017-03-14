@@ -208,6 +208,43 @@ public class MyTree<E> implements Tree<E> {
 		np.elem = o;
 		return ret;
 	}
+	
+	public int height(){
+		if (root==null) return -1;
+		return height(root);
+	}
+	
+	private int height(TNode n) {
+		List<TNode> cList = n.children; 
+		if (cList.size()==0) return 1;
+		int max = 0;
+		Iterator<TNode> it = cList.elements();
+		while (it.hasNext()){
+			int h = height(it.next());
+			if (h>max) max = h;
+		}
+		return max+1;
+	}
+
+	private TNode deepest;
+	private int maxDepth;
+	public Position<E> deepestNode(){
+		if (root==null) return null;
+		deepest=null;
+		maxDepth=-1;
+		findDeepest(root,0);
+		return deepest;
+	}
+
+	private void findDeepest(TNode p, int depth) {
+		if (depth>maxDepth) {
+			maxDepth=depth;
+			deepest = p;
+		}
+		List<TNode> cList = p.children; 
+		Iterator<TNode> it = cList.elements();
+		while (it.hasNext()) findDeepest(it.next(), depth+1);
+	}
 
 	public static void main(String[] args) {
 		MyTree<String> t = new MyTree<>();
@@ -218,10 +255,12 @@ public class MyTree<E> implements Tree<E> {
 		Position<String> p3 = t.addChild(p2,"Kapitel 2.2");
 		t.replaceElement(p3,"Kapitel 2.3");
 		t.addChildAt(1,p2,"Kapitel 2.2");
+		t.addChild(p3,"Kapitel 2.3.1");
 		System.out.println(t.root.element());
 		Iterator<String> it = t.childrenElements(p2);
 		while (it.hasNext()) System.out.println(it.next());
-		
+		System.out.println(t.height());
+		System.out.println(t.deepestNode().element());
 	}
 
 }

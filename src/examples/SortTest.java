@@ -25,6 +25,34 @@ public class SortTest {
 		return true;
 	}	
 
+	static public boolean heapCheck(int [] a){
+	  for (int i=1;i<a.length;i++) if (a[i]>a[(i-1)/2]) return false;
+	  return true;
+	}
+	
+	static public void heapSort(int [] a){
+		for (int i=1;i<a.length;i++) upHeap(a,i);
+		System.out.println(heapCheck(a));
+		// now a[0..a.length-1] is a max-heap
+		for (int i=a.length;i>0;i--) {
+			swap(a,0,i);
+			downHeap(a,i-1);
+		}
+	}
+
+	private static void downHeap(int[] a, int i) {
+		// a[0] has to be swapped with its bigger child
+		// until heap condition ok.
+		// at the end a[0..i-1] is again a max-heap
+	}
+
+	private static void upHeap(int[] a, int i) {
+		// a[i] has to be swapped with its parent 
+		// until heap condition ok
+		// at the end a[0..i] is again a maxHeap
+		
+	}
+
 
 	/**
 	 * Non optimized bubble sort for an int array 
