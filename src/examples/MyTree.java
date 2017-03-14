@@ -61,8 +61,9 @@ public class MyTree<E> implements Tree<E> {
 
 	@Override
 	public Iterator<Position<E>> childrenPositions(Position<E> parent) {
+		TNode p = checkAndCast(parent);
 		return new Iterator<Position<E>>(){
-			Position<TNode> current = checkAndCast(parent).children.first();
+			Position<TNode> current = p.children.first();
 			@Override
 			public boolean hasNext() {
 				return current!=null;
@@ -71,35 +72,58 @@ public class MyTree<E> implements Tree<E> {
 			@Override
 			public TNode next() {
 				Position<TNode> ret = current;
-				current = ((TNode)parent).children.next(ret);
+				current = p.children.next(ret);
 				return ret.element();
 			}};
 	}
 
 	@Override
 	public Iterator<E> childrenElements(Position<E> parent) {
-		// TODO Auto-generated method stub
-		return null;
+		TNode p = checkAndCast(parent);
+		return new Iterator<E>(){
+			Position<TNode> current = p.children.first();
+			@Override
+			public boolean hasNext() {
+				return current!=null;
+			}
+			@Override
+			public E next() {
+				Position<TNode> ret = current;
+				current = p.children.next(ret);
+				return ret.element().elem;
+			}};
 	}
 
 	@Override
 	public int numberOfChildren(Position<E> parent) {
-		// TODO Auto-generated method stub
-		return 0;
+		return checkAndCast(parent).children.size();
 	}
 
 	@Override
 	public Position<E> insertParent(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		TNode n = checkAndCast(p);
+		TNode newP = new TNode();
+		newP.elem=o;
+		if (n == root){
+			root = newP;
+		}
+		else {
+			// newP takes the former role of n:
+			newP.parent = n.parent;
+			newP.myChildrenPos = n.myChildrenPos; // we take the position of p
+			newP.parent.children.replaceElement(newP.myChildrenPos,newP);		
+		}
+		//make 'p' the child of the new position
+		n.parent = newP;
+		n.myChildrenPos = newP.children.insertFirst(n);
+		size++;
+		return newP;			}
 
 	@Override
 	public Position<E> addChild(Position<E> parent, E o) {
 		TNode np = checkAndCast(parent);
 		TNode n = new TNode();
-		n.elem = o;
-		
+		n.elem = o;		
 		n.parent = np;
 		size++;
 		n.myChildrenPos = np.children.insertLast(n);
@@ -108,8 +132,26 @@ public class MyTree<E> implements Tree<E> {
 
 	@Override
 	public Position<E> addChildAt(int pos, Position<E> parent, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		TNode p = checkAndCast(parent);
+		if (pos > p.children.size()|| pos < 0 ) throw new RuntimeException("invalid rank");
+		TNode n = new TNode();
+		n.elem = o;
+		n.parent = p;
+		Position<TNode> linkedListPosition = null;
+		if (pos == 0) linkedListPosition = p.children.insertFirst(n); 
+		else if (pos == p.children.size()) linkedListPosition = p.children.insertLast(n); 
+		else {
+			Iterator<Position<TNode>> it = p.children.positions();
+			// skip pos-2 nodes
+			for (int i=0;i<pos-1;i++){
+				it.next();
+			}
+			Position<TNode> lPos = (it.next()); // lPos is the LinkedList-position before the insertion point
+			linkedListPosition = p.children.insertAfter(lPos, n);
+		}
+		n.myChildrenPos = linkedListPosition;
+		size++;
+		return n;
 	}
 
 	@Override
@@ -125,26 +167,33 @@ public class MyTree<E> implements Tree<E> {
 
 	@Override
 	public Position<E> addSiblingBefore(Position<E> sibling, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		TNode ns = checkAndCast(sibling);
+		TNode n = new TNode();
+		n.elem = o;
+		n.myChildrenPos = ns.parent.children.insertBefore(ns.myChildrenPos, n);
+		n.parent = ns.parent;
+		size++;
+		return n;
 	}
 
 	@Override
 	public void remove(Position<E> p) {
-		// TODO Auto-generated method stub
-
+		TNode n = checkAndCast(p);
+		if (n.children.size()!=0) throw new RuntimeException("Can't remove node with children!");
+		if (n==root) root = null;
+		else n.parent.children.remove(n.myChildrenPos);
+		size--;
+		n.creator = null;
 	}
 
 	@Override
 	public boolean isExternal(Position<E> p) {
-		// TODO Auto-generated method stub
-		return false;
+		return checkAndCast(p).children.size()==0;
 	}
 
 	@Override
 	public boolean isInternal(Position<E> p) {
-		// TODO Auto-generated method stub
-		return false;
+		return checkAndCast(p).children.size()!=0;
 	}
 
 	@Override
@@ -154,8 +203,10 @@ public class MyTree<E> implements Tree<E> {
 
 	@Override
 	public E replaceElement(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		TNode np = checkAndCast(p);
+		E ret = np.elem;
+		np.elem = o;
+		return ret;
 	}
 
 	public static void main(String[] args) {
@@ -164,9 +215,12 @@ public class MyTree<E> implements Tree<E> {
 		t.addChild(p,"Kapitel 1");
 		Position p2 = t.addChild(p,"Kapitel 2");
 		t.addChild(p2,"Kapitel 2.1");
+		Position<String> p3 = t.addChild(p2,"Kapitel 2.2");
+		t.replaceElement(p3,"Kapitel 2.3");
+		t.addChildAt(1,p2,"Kapitel 2.2");
 		System.out.println(t.root.element());
-		Iterator<Position<String>> it = t.childrenPositions(p2);
-		while (it.hasNext()) System.out.println(it.next().element());
+		Iterator<String> it = t.childrenElements(p2);
+		while (it.hasNext()) System.out.println(it.next());
 		
 	}
 
