@@ -166,8 +166,19 @@ public class MyLinkedList<E> implements List<E> {
 
 	@Override
 	public Iterator<E> elements() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<E>(){
+			LNode current = first;
+			@Override
+			public boolean hasNext() {
+				return current!=null;
+			}
+
+			@Override
+			public E next(){
+				LNode n = current;
+				current = current.next;
+				return n.elem;
+			}};
 	}
 
 	@Override
