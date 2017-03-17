@@ -32,27 +32,42 @@ public class SortTest {
 	
 	static public void heapSort(int [] a){
 		for (int i=1;i<a.length;i++) upHeap(a,i);
-		System.out.println(heapCheck(a));
+		System.out.println("heap? "+heapCheck(a));
 		// now a[0..a.length-1] is a max-heap
-		for (int i=a.length;i>0;i--) {
+		for (int i=a.length-1;i>0;i--) {
 			swap(a,0,i);
 			downHeap(a,i-1);
 		}
 	}
 
-	private static void downHeap(int[] a, int i) {
-		// a[0] has to be swapped with its bigger child
-		// until heap condition ok.
-		// at the end a[0..i-1] is again a max-heap
-	}
 
 	private static void upHeap(int[] a, int i) {
 		// a[i] has to be swapped with its parent 
 		// until heap condition ok
 		// at the end a[0..i] is again a maxHeap
-		
+		int parent = (i-1)/2;
+		while (i > 0 && a[i]>a[parent]){			
+			swap(a,i,parent);
+			i=parent;
+			parent = (i-1)/2;
+		}
 	}
 
+	private static void downHeap(int[] a, int len) {
+		// a[0] has to be swapped with its bigger child
+		// until heap condition ok.
+		// at the end a[0..len-1] is again a max-heap
+		int pos = 0, left = 1,right = 2;
+		while (left<len){
+			int biggerChild = left;
+			if (right<len && a[right]>a[left]) biggerChild = right;
+			if (a[pos]>=a[biggerChild]) break;
+			swap(a,pos,biggerChild);
+			pos = biggerChild;
+			left = 2*pos+1;
+			right = left+1;
+		}
+	}
 
 	/**
 	 * Non optimized bubble sort for an int array 
@@ -146,7 +161,7 @@ public class SortTest {
 		// get Time
 		te1=System.nanoTime();
 		t1 = threadBean.getCurrentThreadCpuTime();
-		mergeSort(a);
+		heapSort(a);
 		te2 = System.nanoTime();
 		t2 = threadBean.getCurrentThreadCpuTime();
 		time=t2-t1;
