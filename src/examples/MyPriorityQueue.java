@@ -22,7 +22,19 @@ public class MyPriorityQueue<K extends Comparable<? super K>, E> implements
 
 	private PQLoc<K,E> [] heap = new PQLoc[100];
 	private int size;
-	
+
+	private PQLoc checkAndCast(Locator<K,E> p) {
+		PQLoc n;
+		try {
+			n = (PQLoc) p;
+		} catch (ClassCastException e) {
+			throw new RuntimeException("This is not a Locator belonging to MyPriorityQueue"); 
+		}
+		if (n.creator == null) throw new RuntimeException("locator was allready deleted!");
+		if (n.creator != this) throw new RuntimeException("locator belongs to another MyPriorityQueue instance!");			
+		return n;
+	}
+
 	@Override
 	public Locator<K, E> showMin() {
 		// TODO Auto-generated method stub
