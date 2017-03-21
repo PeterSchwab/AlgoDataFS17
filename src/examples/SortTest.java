@@ -31,13 +31,13 @@ public class SortTest {
 	}
 	
 	static public void heapSort(int [] a){
-		for (int i=1;i<a.length;i++) upHeap(a,i);
-
+		//for (int i=1;i<a.length;i++) upHeap(a,i);
+		for (int i=a.length/2+1;i>=0;i--)downHeap(a,i,a.length);
 		System.out.println("heap? "+heapCheck(a));
 		// now a[0..a.length-1] is a max-heap
 		for (int i=a.length-1;i>0;i--) {
 			swap(a,0,i);
-			downHeap(a,i);
+			downHeap(a,0,i);
 		}
 	}
 
@@ -54,11 +54,11 @@ public class SortTest {
 		}
 	}
 
-	private static void downHeap(int[] a, int len) {
-		// a[0] has to be swapped with its bigger child
+	private static void downHeap(int[] a, int pos, int len) {
+		// a[pos] has to be swapped with its bigger child
 		// until heap condition ok.
-		// at the end a[0..len-1] is again a max-heap
-		int pos = 0, left = 1, right = 2;
+		// at the end a[pos..len-1] is again a max-subheap
+		int left = pos*2+1, right = left+1;
 		while (left<len){
 			int biggerChild = left;
 			if (right<len && a[right]>a[left]) biggerChild = right;
@@ -145,7 +145,7 @@ public class SortTest {
 
 	public static void main(String[] args) {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
-		int n = 100000000;
+		int n = 10000000;
 		// we need a random generator
 		Random rand=new Random();
 		// rand.setSeed(8237493); // initialize always in the same state
