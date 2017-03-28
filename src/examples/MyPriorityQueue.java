@@ -1,8 +1,8 @@
 package examples;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Random;
+
 
 public class MyPriorityQueue<K extends Comparable<? super K>, E> implements
 		PriorityQueue<K, E> {
