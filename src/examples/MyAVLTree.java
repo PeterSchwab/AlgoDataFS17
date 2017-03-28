@@ -52,10 +52,23 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	private AVLNode root = new AVLNode();
 	private int size;
 	
+
+	private AVLNode checkAndCast(Locator<K,E> p) {
+		AVLNode n;
+		try {
+			n = (AVLNode) p;
+		} catch (ClassCastException e) {
+			throw new RuntimeException("This is not a Locator belonging to MyLinkedList"); 
+		}
+		if (n.creator == null) throw new RuntimeException("locator was allready deleted!");
+		if (n.creator != this) throw new RuntimeException("locator belongs to another MyLinkedList instance!");			
+		return n;
+	}
+
+	
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	@Override
@@ -72,9 +85,23 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public Locator<K, E> insert(K key, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		AVLNode n=root;
+		while( ! n.isExternal()){
+			if (key.compareTo(n.key)<0) n=n.left;
+			else n=n.right;
+		}
+		n.expand(key,o);
+		// now we should adjust the height of all ancestors of n
+		adjustHeightAboveAndRebalance(n);
+		size++;
+		return n;
 	}
+
+	private void adjustHeightAboveAndRebalance(MyAVLTree<K, E>.AVLNode n) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	@Override
 	public void remove(Locator<K, E> loc) {
@@ -124,9 +151,32 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		return null;
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		buildString(root,"", sb, false);
+		return sb.toString();
+	}
+	
+	private void buildString(AVLNode r, String ind,
+			StringBuilder sb, boolean indent) {
 
+		if (r.isExternal()) return;
+		String add ="";
+		if (indent) add="-"; 
+		buildString(r.left, ind+add, sb, indent);
+		sb.append(ind+"key: "+r.key+" element: "+r.elem+"\n");
+		buildString(r.right, ind+add, sb, indent);	
+	}
+
+
+	public static void main(String[] args) {
+		MyAVLTree<Integer,String> t = new MyAVLTree<>();
+		t.insert(10,"elem of key 10");
+		t.insert(1,"elem of key 1");
+		t.insert(20,"elem of key 20");
+		t.insert(5,"elem of key 5");
+		t.insert(3,"elem of key 3");
+		System.out.println(t);
 	}
 
 }
