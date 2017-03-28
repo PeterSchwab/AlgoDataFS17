@@ -75,8 +75,19 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public Locator<K, E> find(K key) {
-		// TODO Auto-generated method stub
-		return null;
+		// return the "leftmost" locator with key 'key' (or null)
+		AVLNode n = root;
+		AVLNode ret = null;
+		while (! n.isExternal()){
+			int comp = key.compareTo(n.key);
+			if (comp<0) n=n.left;
+			else if (comp>0) n=n.right;
+			else {
+				ret = n;
+				n=n.left;
+			}
+		}
+		return ret;
 	}
 
 	@Override
@@ -175,14 +186,15 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		buildString(r.right, ind+add, sb, indent);	
 	}
 
-
 	public static void main(String[] args) {
 		MyAVLTree<Integer,String> t = new MyAVLTree<>();
 		t.insert(10,"elem of key 10");
+		t.insert(5,"first elem of key 5");
 		t.insert(1,"elem of key 1");
 		t.insert(20,"elem of key 20");
-		t.insert(5,"elem of key 5");
+		t.insert(5,"second elem of key 5");
 		t.insert(3,"elem of key 3");
+		System.out.println(t.find(5).element());
 		System.out.println(t);
 	}
 
