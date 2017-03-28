@@ -44,6 +44,8 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 			height=1;
 			left = new AVLNode();
 			right = new AVLNode();
+			// backwards:
+			left.parent=right.parent=this;
 		}
 	}
 	
@@ -97,9 +99,14 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		return n;
 	}
 
-	private void adjustHeightAboveAndRebalance(MyAVLTree<K, E>.AVLNode n) {
-		// TODO Auto-generated method stub
-		
+	private void adjustHeightAboveAndRebalance(AVLNode n) {
+		n=n.parent;
+		while (n!=null){
+			int newHeight = 1+Math.max(n.left.height,n.right.height);
+			if (n.height==newHeight) return;
+			n.height=newHeight;
+			n=n.parent;
+		}
 	}
 
 
@@ -153,7 +160,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		buildString(root,"", sb, false);
+		buildString(root,"", sb, true);
 		return sb.toString();
 	}
 	
@@ -164,7 +171,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		String add ="";
 		if (indent) add="-"; 
 		buildString(r.left, ind+add, sb, indent);
-		sb.append(ind+"key: "+r.key+" element: "+r.elem+"\n");
+		sb.append(ind+"key: "+r.key+" element: "+r.elem+" ,height="+r.height+"\n");
 		buildString(r.right, ind+add, sb, indent);	
 	}
 
