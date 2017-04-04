@@ -130,8 +130,25 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 						  // replaced the really removed node
 		
 		if ( ! n.left.isExternal() && ! n.right.isExternal()){
-			// we must replace!
-			// ....
+			// we must replace
+			// lets take the rightmost node in the left 
+			// subtree of n:
+			AVLNode v = n.left;
+			while ( ! v.right.isExternal()) v = v.right;
+			w = removeAboveExternal(v);
+			// now replace n by v:
+			v.parent = n.parent;
+			if (n.isLeftChild()) v.parent.left = v;
+			else if (n.isrightChild()) v.parent.right = v;
+			else root = v;
+			// height:
+			v.height = n.height;
+			// children:
+			v.left = n.left;
+			v.left.parent = v;
+			v.right = n.right;
+			v.right.parent = v;
+			
 		}
 		else {
 			w = removeAboveExternal(n);
