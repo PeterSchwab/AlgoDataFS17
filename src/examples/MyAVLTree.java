@@ -1,6 +1,7 @@
 package examples;
 
 import java.util.Iterator;
+import java.util.Random;
 
 public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		OrderedDictionary<K, E> {
@@ -33,7 +34,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 			return parent.left==this;
 		}
 		
-		boolean isrightChild(){
+		boolean isRightChild(){
 			if (parent==null) return false;
 			return parent.right==this;
 		}
@@ -139,7 +140,7 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 			// now replace n by v:
 			v.parent = n.parent;
 			if (n.isLeftChild()) v.parent.left = v;
-			else if (n.isrightChild()) v.parent.right = v;
+			else if (n.isRightChild()) v.parent.right = v;
 			else root = v;
 			// height:
 			v.height = n.height;
@@ -161,8 +162,17 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	private AVLNode removeAboveExternal( AVLNode n) {
 		// remove n and return the node which takes the place of n
-		// ....
-		return null;
+		AVLNode w;
+		if (n.left.isExternal()){
+			w = n.right;
+		}
+		else w = n.left;
+		// chaining
+		w.parent = n.parent;
+		if (n.isLeftChild()) w.parent.left = w;
+		else if (n.isRightChild()) w.parent.right = w;
+		else root = w;			
+		return w;
 	}
 	
 	@Override
@@ -179,8 +189,16 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public Locator<K, E> next(Locator<K, E> loc) {
-		// TODO Auto-generated method stub
-		return null;
+		AVLNode n=checkAndCast(loc);
+		if (n.right.isExternal()){
+			while (n.isRightChild()) n=n.parent;
+			return n.parent;
+		}
+		else {
+			n=n.right;
+			while (! n.left.isExternal()) n=n.left;
+			return n;
+		}
 	}
 
 	@Override
@@ -191,8 +209,10 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public Locator<K, E> min() {
-		// TODO Auto-generated method stub
-		return null;
+		if (size==0) return null;
+		AVLNode n = root;
+		while ( ! n.left.isExternal()) n=n.left;
+		return n;
 	}
 
 	@Override
@@ -330,14 +350,21 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	public static void main(String[] args) {
 		MyAVLTree<Integer,String> t = new MyAVLTree<>();
-		t.insert(1,"elem of key 10");
-		t.insert(5,"first elem of key 5");
-		t.insert(10,"elem of key 1");
-		t.insert(20,"elem of key 20");
-		t.insert(35,"second elem of key 5");
-		t.insert(38,"elem of key 3");
-		System.out.println(t.find(5).element());
+		int n = 1000000;
+		Random rand = new Random();
+		Locator<Integer,String>[] locs = new Locator[n];
+		long t1 = System.nanoTime();
+		for(int i=0;i<n;i++) locs[i]=t.insert(rand.nextInt(n/1000), ""+i);
+		for(int i=0;i<n-1000;i++) t.remove(locs[i]);
+		long t2 = System.nanoTime();
+		System.out.println("time: "+1e-9*(t2-t1)+" sec for "+n+" insertions and removes");
+		System.out.println("height:"+t.root.height); 
 		System.out.println(t);
+		Locator loc = t.min();
+		while (loc!=null) {
+			System.out.println(loc.key()+", "+loc.element());
+			loc = t.next(loc);
+		}
 	}
 
 }
