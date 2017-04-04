@@ -123,10 +123,15 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public void remove(Locator<K, E> loc) {
-		// TODO Auto-generated method stub
 
 	}
 
+	private AVLNode removeAboveExternal( AVLNode n) {
+		// remove n and return the node which takes the place of n
+		// ....
+		return null;
+	}
+	
 	@Override
 	public Locator<K, E> closestBefore(K key) {
 		// TODO Auto-generated method stub
@@ -174,6 +179,110 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		buildString(root,"", sb, true);
 		return sb.toString();
 	}
+
+	private AVLNode restructure(AVLNode z) {
+		// z is unbalanced
+		// returns the node that takes the position of z (i.e. b)
+		AVLNode p=z.parent,x=null,y=null,
+		a=null,b=null,c=null, t1=null,t2=null; 
+		// t0 and t3 never change their parent, 
+		// that's why we don't need them 
+		if (z.left.height > z.right.height){
+			//   z
+			//  /
+			// y
+			c=z;
+			y=z.left;
+			if (y.left.height >= y.right.height){
+				// in case we have two equal branches
+				// concidering the length we take always the single
+				// rotation
+				//     z
+				//    /
+				//   y
+				//  /
+				// x
+				x=y.left;
+				t1=x.right;
+				t2=y.right;
+				b=y;
+				a=x;
+			}
+			else {
+				//     z
+				//    /
+				//   y
+				//   \  
+				//    x
+				x=y.right;
+				t1=x.left;
+				t2=x.right;
+				a=y;
+				b=x;
+			}
+		}
+		else{
+			// z
+			//   \
+			//    y
+			a=z;
+			y=z.right;
+			if (y.right.height >= y.left.height){
+				//  z
+				//   \
+				//    y
+				//     \  
+				//      x
+				x=y.right;
+				b=y;
+				c=x;
+				t1=y.left;
+				t2=x.left;
+			}
+			else {
+				//  z
+				//   \
+				//    y
+				//    /  
+				//   x
+				x=y.left;
+				b=x;
+				c=y;
+				t1=x.left;
+				t2=x.right;
+			}
+		}		
+		// umhaengen
+		b.parent = p;
+		if (p != null){
+			if (p.left == z) {
+				p.left=b;
+			}
+			else p.right=b;
+		}
+		else {
+			root=b;
+		}
+		b.right = c;
+		b.left = a;
+		// ..and reverse:
+		a.parent = b;
+		c.parent = b;
+
+		// subtrees: (t0 and t3 are already  at its position)
+		a.right = t1;
+		t1.parent = a;
+		c.left = t2;
+		t2.parent = c;
+		
+		
+		a.height = Math.max(a.left.height, a.right.height)+1;
+		c.height = Math.max(c.left.height, c.right.height)+1;
+		// now we can calculate the height of b
+		b.height = Math.max(b.left.height, b.right.height)+1;
+		return b;
+	}
+
 	
 	private void buildString(AVLNode r, String ind,
 			StringBuilder sb, boolean indent) {
