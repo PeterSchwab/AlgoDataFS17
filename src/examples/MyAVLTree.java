@@ -131,11 +131,14 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		
 		if ( ! n.left.isExternal() && ! n.right.isExternal()){
 			// we must replace!
+			// ....
 		}
 		else {
 			w = removeAboveExternal(n);
-			
 		}
+		n.creator = null;
+		size--;
+		adjustHeightAboveAndRebalance(w);
 
 	}
 
