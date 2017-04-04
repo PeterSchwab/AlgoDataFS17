@@ -114,8 +114,10 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		n=n.parent;
 		while (n!=null){
 			int newHeight = 1+Math.max(n.left.height,n.right.height);
-			if (n.height==newHeight) return;
+			boolean balanced = Math.abs(n.left.height-n.right.height)<2; 
+			if (n.height==newHeight && balanced) return;
 			n.height=newHeight;
+			if ( ! balanced) n = restructure(n);
 			n=n.parent;
 		}
 	}
@@ -123,6 +125,17 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public void remove(Locator<K, E> loc) {
+		AVLNode n = checkAndCast(loc);
+		AVLNode w = null; // this will be the node which
+						  // replaced the really removed node
+		
+		if ( ! n.left.isExternal() && ! n.right.isExternal()){
+			// we must replace!
+		}
+		else {
+			w = removeAboveExternal(n);
+			
+		}
 
 	}
 
@@ -297,12 +310,12 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	public static void main(String[] args) {
 		MyAVLTree<Integer,String> t = new MyAVLTree<>();
-		t.insert(10,"elem of key 10");
+		t.insert(1,"elem of key 10");
 		t.insert(5,"first elem of key 5");
-		t.insert(1,"elem of key 1");
+		t.insert(10,"elem of key 1");
 		t.insert(20,"elem of key 20");
-		t.insert(5,"second elem of key 5");
-		t.insert(3,"elem of key 3");
+		t.insert(35,"second elem of key 5");
+		t.insert(38,"elem of key 3");
 		System.out.println(t.find(5).element());
 		System.out.println(t);
 	}
