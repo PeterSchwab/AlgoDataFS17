@@ -74,6 +74,12 @@ public class SortTest {
 		return left;
 	}	
 
+	static void quickSelect(int a[], int rank){
+		// on return the following condition helds:
+		// a[0..rank-1] <=  a[rank] <= a[rank+1..a.length-1]
+	}
+
+	
 	static public boolean heapCheck(int [] a){
 	  for (int i=1;i<a.length;i++) if (a[i]>a[(i-1)/2]) return false;
 	  return true;
