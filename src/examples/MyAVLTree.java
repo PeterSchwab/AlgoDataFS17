@@ -93,9 +93,27 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public Locator<K, E>[] findAll(K key) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Locator<K,E>> list = new MyLinkedList<>();
+		if (size!=0) findAll(key,root,list);
+		Iterator<Locator<K,E>> it = list.elements();
+		Locator[]ret = new Locator[list.size()];
+		int i = 0;
+		while (it.hasNext()) ret[i++]=it.next();
+		return ret;
 	}
+
+	private void findAll(K key,AVLNode p,List<Locator<K, E>> list) {
+		if (p.isExternal()) return;
+		int comp = p.key.compareTo(key);
+		if (comp<0) findAll(key,p.right,list);
+		else if (comp>0) findAll(key,p.left,list);
+		else {
+			findAll(key,p.left,list);
+			list.insertLast(p);
+			findAll(key,p.right,list);
+		}
+	}
+
 
 	@Override
 	public Locator<K, E> insert(K key, E o) {
@@ -348,23 +366,54 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		buildString(r.right, ind+add, sb, indent);	
 	}
 
+	public void test(){
+		if (root.parent!=null) throw new RuntimeException("root has parent!");
+		if (size>0) test(root);
+	}
+
+
+	private void test(AVLNode n) {
+		if (n.isExternal()) return;
+		test(n.left);
+		test(n.right);
+		if (n.left.parent != n) throw new RuntimeException("chaining incorrect"+n.key);
+		if (n.right.parent != n) throw new RuntimeException("chaining incorrec"+n.key);
+		if (Math.max(n.left.height,n.right.height)+1!=n.height)
+			throw new RuntimeException("Height wrong"+n.key);
+		if (n.left.key !=null &&  n.left.key.compareTo(n.key)>0) throw new RuntimeException("order wrong "+n.key); 
+		if (n.right.key !=null &&  n.right.key.compareTo(n.key)<0) throw new RuntimeException("order wrong "+n.key);
+		if (Math.abs(n.left.height-n.right.height)> 1) throw new RuntimeException("unbalanced "+n.key);
+		if (n.creator != this) throw new RuntimeException("invalid node: "+n.key);
+	}
+
 	public static void main(String[] args) {
 		MyAVLTree<Integer,String> t = new MyAVLTree<>();
 		int n = 1000000;
 		Random rand = new Random();
-		Locator<Integer,String>[] locs = new Locator[n];
+//		Locator<Integer,String>[] locs = new Locator[n];
+		int [] keys = new int[n];
 		long t1 = System.nanoTime();
-		for(int i=0;i<n;i++) locs[i]=t.insert(rand.nextInt(n/1000), ""+i);
-		for(int i=0;i<n-1000;i++) t.remove(locs[i]);
+//		for(int i=0;i<n;i++) locs[i]=t.insert(rand.nextInt(n/1000), ""+i);
+		for(int i=0;i<n;i++) {
+			keys[i]=rand.nextInt(n/1000);
+			t.insert(keys[i], ""+i);
+		}
+//		for(int i=0;i<n/2;i++) t.remove(locs[i]);
+		for(int i=0;i<n/2;i++){
+			t.remove(t.find(keys[i]));
+		}
 		long t2 = System.nanoTime();
 		System.out.println("time: "+1e-9*(t2-t1)+" sec for "+n+" insertions and removes");
 		System.out.println("height:"+t.root.height); 
-		System.out.println(t);
-		Locator loc = t.min();
-		while (loc!=null) {
-			System.out.println(loc.key()+", "+loc.element());
-			loc = t.next(loc);
-		}
-	}
+//		System.out.println(t);
+		t.test();
+		Locator[] found =  t.findAll(6);
+		for (int i = 0;i<found.length;i++) System.out.println(found[i].key()+", "+found[i].element());
+//		Locator loc = t.min();
+//		while (loc!=null) {
+//			System.out.println(loc.key()+", "+loc.element());
+//			loc = t.next(loc);
+//		}
+	}	
 
 }
