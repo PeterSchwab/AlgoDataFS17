@@ -14,7 +14,7 @@ public class SortTest {
 	
 	public static long cnt,cnt2;
 	static int [] b;
-	static Random rand = new Random(821438174);
+	static Random rand = new Random(8218174);
 	/**
 	 * @param a int aray
 	 * @return 'true' if 'a' is sorted 
@@ -65,10 +65,10 @@ public class SortTest {
 		int pivot = a[to];
 		while(true){
 			while(a[++left]  < pivot);  // we found an element to swap at a[left]
-			while(a[--right] > pivot && right>from);
-			// 
-			// ....
-			break;
+			while(a[--right] > pivot && right>from); 
+			   		// either the two pointers met or we swap
+			if (left>=right) break;
+			swap(a,left,right);
 		}
 		swap(a,left,to);
 		return left;
@@ -194,9 +194,9 @@ public class SortTest {
 
 	public static void main(String[] args) {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
-		int n = 100000000;
+		int n = 10000000;
 		// we need a random generator
-		Random rand=new Random();
+		Random rand=new Random(4343);
 		// rand.setSeed(8237493); // initialize always in the same state
 		ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();	
 		// new array
