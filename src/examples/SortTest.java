@@ -14,6 +14,7 @@ public class SortTest {
 	
 	public static long cnt,cnt2;
 	static int [] b;
+	static Random rand = new Random(821438174);
 	/**
 	 * @param a int aray
 	 * @return 'true' if 'a' is sorted 
@@ -23,6 +24,54 @@ public class SortTest {
 			if (a[i]>a[i+1]) return false; 
 		}
 		return true;
+	}	
+
+	
+	public static void quickSort(int [] a){
+		qSort(a,0,a.length-1);
+	}
+
+	/**
+	 * recursive version of quick sort (sorts 
+	 * the range a[from..to] of the int array 'a')
+	 * @param a 
+	 * @param from 
+	 * @param to
+	 */
+	private static void qSort(int []a, int from, int to){
+		if (from >= to) return; // nothing to do if sequence has length 1 or less
+		int piv = partition(a,from,to);
+		// now a[to..piv-1] <= a[piv] and 
+		// a[piv+1..to]>=a[piv]
+		qSort(a,from,piv-1);
+		qSort(a,piv+1,to);
+	}
+	
+	/**
+	 * retuns piv and partitions the
+	 * range a[from..to] such that all of the elements 
+	 * in the range a[from..piv-1] are <= a[piv] and
+	 * all elements in the range a[piv+1..to] are  >= a[piv]
+	 * @param a
+	 * @param from
+	 * @param to
+	 * @return the position 'piv' of the pivot
+	 */
+	private static int partition(int []a, int from, int to){
+		if (from==to) return to;
+		if (to > from) swap(a,to,from+rand.nextInt(to-from));
+		int left=from-1;
+		int right = to;
+		int pivot = a[to];
+		while(true){
+			while(a[++left]  < pivot);  // we found an element to swap at a[left]
+			while(a[--right] > pivot && right>from);
+			// 
+			// ....
+			break;
+		}
+		swap(a,left,to);
+		return left;
 	}	
 
 	static public boolean heapCheck(int [] a){
@@ -145,7 +194,7 @@ public class SortTest {
 
 	public static void main(String[] args) {
 		long t1=0,t2=0,te1=0,te2=0,eTime=0,time=0;
-		int n = 10000000;
+		int n = 100000000;
 		// we need a random generator
 		Random rand=new Random();
 		// rand.setSeed(8237493); // initialize always in the same state
@@ -162,7 +211,7 @@ public class SortTest {
 		// get Time
 		te1=System.nanoTime();
 		t1 = threadBean.getCurrentThreadCpuTime();
-		heapSort(a);
+		quickSort(a);
 		te2 = System.nanoTime();
 		t2 = threadBean.getCurrentThreadCpuTime();
 		time=t2-t1;
