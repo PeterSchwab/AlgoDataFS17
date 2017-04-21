@@ -13,8 +13,6 @@ import java.util.Random;
 public class SortTest {
 	
 	public static long cnt,cnt2;
-	static int [] b;
-	static Random rand = new Random(8218174);
 	/**
 	 * @param a int aray
 	 * @return 'true' if 'a' is sorted 
@@ -24,9 +22,10 @@ public class SortTest {
 			if (a[i]>a[i+1]) return false; 
 		}
 		return true;
-	}	
+	}
 
-	
+	static int [] b;
+	static Random rand = new Random(8218174);
 	public static void quickSort(int [] a){
 		qSort(a,0,a.length-1);
 	}
@@ -77,9 +76,18 @@ public class SortTest {
 	static void quickSelect(int a[], int rank){
 		// on return the following condition helds:
 		// a[0..rank-1] <=  a[rank] <= a[rank+1..a.length-1]
+		qSelect(a,0,a.length-1,rank);
 	}
 
 	
+	private static void qSelect(int[] a, int from, int to, int rank) {
+		int piv = partition(a, from, to);
+		if (piv == rank) return;
+		if (piv > rank) qSelect(a,0,piv-1,rank);
+		else qSelect(a,piv+1,to,rank);
+	}
+
+
 	static public boolean heapCheck(int [] a){
 	  for (int i=1;i<a.length;i++) if (a[i]>a[(i-1)/2]) return false;
 	  return true;
