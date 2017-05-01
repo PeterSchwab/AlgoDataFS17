@@ -208,6 +208,11 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 	@Override
 	public Locator<K, E> next(Locator<K, E> loc) {
 		AVLNode n=checkAndCast(loc);
+		return next(n);
+	}
+
+	private AVLNode next(AVLNode n){
+		// n internal!
 		if (n.right.isExternal()){
 			while (n.isRightChild()) n=n.parent;
 			return n.parent;
@@ -216,13 +221,21 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 			n=n.right;
 			while (! n.left.isExternal()) n=n.left;
 			return n;
-		}
+		}		
 	}
-
+	
 	@Override
 	public Locator<K, E> previous(Locator<K, E> loc) {
-		// TODO Auto-generated method stub
-		return null;
+		AVLNode n=checkAndCast(loc);
+		if (n.left.isExternal()){
+			while (n.isLeftChild()) n=n.parent;
+			return n.parent;
+		}
+		else {
+			n=n.left;
+			while (! n.right.isExternal()) n=n.right;
+			return n;
+		}
 	}
 
 	@Override
@@ -235,14 +248,29 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	@Override
 	public Locator<K, E> max() {
-		// TODO Auto-generated method stub
-		return null;
+		if (size==0) return null;
+		AVLNode n = root;
+		while ( ! n.right.isExternal()) n=n.right;
+		return n;
 	}
 
 	@Override
 	public Iterator<Locator<K, E>> sortedLocators() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<Locator<K,E>>(){
+			AVLNode n = (AVLNode)min();
+			@Override
+			public boolean hasNext() {
+				return n!=null;
+			}
+
+			@Override
+			public Locator<K, E> next() {
+				AVLNode ret = n;
+				n=MyAVLTree.this.next(n);
+				return ret;
+			}
+			
+		};
 	}
 
 	public String toString(){
@@ -371,7 +399,6 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 		if (size>0) test(root);
 	}
 
-
 	private void test(AVLNode n) {
 		if (n.isExternal()) return;
 		test(n.left);
@@ -388,25 +415,27 @@ public class MyAVLTree<K extends Comparable<? super K>, E> implements
 
 	public static void main(String[] args) {
 		MyAVLTree<Integer,String> t = new MyAVLTree<>();
-		int n = 1000000;
+		int n = 100;
 		Random rand = new Random();
 //		Locator<Integer,String>[] locs = new Locator[n];
 		int [] keys = new int[n];
 		long t1 = System.nanoTime();
 //		for(int i=0;i<n;i++) locs[i]=t.insert(rand.nextInt(n/1000), ""+i);
 		for(int i=0;i<n;i++) {
-			keys[i]=rand.nextInt(n/1000);
+			keys[i]=rand.nextInt(n);
 			t.insert(keys[i], ""+i);
 		}
 //		for(int i=0;i<n/2;i++) t.remove(locs[i]);
 		for(int i=0;i<n/2;i++){
 			t.remove(t.find(keys[i]));
 		}
+		Iterator<Locator<Integer,String>> it = t.sortedLocators();
+		while (it.hasNext()) System.out.println(it.next().key());
 		long t2 = System.nanoTime();
 		System.out.println("time: "+1e-9*(t2-t1)+" sec for "+n+" insertions and removes");
 		System.out.println("height:"+t.root.height); 
 //		System.out.println(t);
-		t.test();
+//		t.test();
 		Locator[] found =  t.findAll(6);
 		for (int i = 0;i<found.length;i++) System.out.println(found[i].key()+", "+found[i].element());
 //		Locator loc = t.min();
