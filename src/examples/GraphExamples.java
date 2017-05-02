@@ -26,9 +26,28 @@ public class GraphExamples<V,E> {
 	
 	@Algorithm
 	public boolean isConnected(Graph g, GraphTool gt){
-		return false;
+		Iterator<Vertex> it = g.vertices();
+		if (it.hasNext()) dfs(g,it.next(),gt);
+		while(it.hasNext()) if ( ! it.next().has(Attribute.VISITED)) return false;
+		return true;
 	}
 	
+	private void dfs(Graph g, Vertex v, GraphTool gt) {
+		// label the vertex 'v'
+		v.set(Attribute.VISITED,null);
+		v.set(Attribute.color,Color.GREEN);
+		gt.show(g);
+		Iterator<Edge> eIt = g.incidentEdges(v);
+		while (eIt.hasNext()) {
+			Edge e = eIt.next();
+			Vertex w = g.opposite(e, v);
+			if ( ! w.has(Attribute.VISITED)){
+				e.set(Attribute.color, Color.GREEN);
+				dfs(g,w,gt);
+			}
+		}
+	}
+
 	/**
 	 * @param args
 	 * 
@@ -70,7 +89,7 @@ public class GraphExamples<V,E> {
 		
 		// use graph Tool
 		
-		GraphTool t = new GraphTool(g,ge);
+		GraphTool t = new GraphTool(ge);
 
 		//    A__B     F
 		//      /|\   /|
