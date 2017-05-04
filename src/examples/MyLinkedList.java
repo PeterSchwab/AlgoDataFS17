@@ -66,8 +66,10 @@ public class MyLinkedList<E> implements List<E> {
 
 	@Override
 	public E replaceElement(Position<E> p, E o) {
-		// TODO Auto-generated method stub
-		return null;
+		LNode n = checkAndCast(p);
+		E ret = n.elem;
+		n.elem  = o;
+		return ret;
 	}
 
 	@Override
@@ -188,8 +190,7 @@ public class MyLinkedList<E> implements List<E> {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return size == 0;
 	}
 
 	public static void main(String[] args) {

@@ -27,15 +27,65 @@ public class GraphExamples<V,E> {
 	@Algorithm
 	public boolean isConnected(Graph g, GraphTool gt){
 		Iterator<Vertex> it = g.vertices();
-		if (it.hasNext()) dfs(g,it.next(),gt);
+		if (it.hasNext()) dfs(g,it.next(),gt,1);
 		while(it.hasNext()) if ( ! it.next().has(Attribute.VISITED)) return false;
 		return true;
 	}
 	
-	private void dfs(Graph g, Vertex v, GraphTool gt) {
+	@Algorithm(vertex=true,vertex2=true)
+	public java.util.List findPath(Graph g, Vertex from, Vertex to, GraphTool gt){
+		LinkedList<Vertex> q = new LinkedList();
+		from.set(Attribute.VISITED,null);
+		q.addLast(from);
+		boolean found=false;
+		while ( ! q.isEmpty() && ! found){
+			Vertex cur = q.removeFirst();
+			Iterator<Edge> eIt = null;
+			if (g.isDirected()) eIt = g.incidentOutEdges(cur);
+			else eIt = g.incidentEdges(cur);
+			while (eIt.hasNext() && ! found){
+				Edge e = eIt.next();
+				Vertex w = g.opposite(e, cur);
+				if ( ! w.has(Attribute.VISITED)){
+					e.set(Attribute.color,Color.green);
+					w.set(Attribute.color,Color.green);
+					w.set(Attribute.VISITED,e);
+					q.addLast(w);
+					gt.show(g);
+					if (w == to) found = true;
+				}
+			}
+		}
+		if ( ! found) return null;
+		LinkedList li = new LinkedList();
+		li.addLast(to);
+		while (to!=from){
+			Edge e=(Edge)to.get(Attribute.VISITED);
+			e.set(Attribute.color,Color.RED);
+			to = g.opposite(e,to);
+			gt.show(g);
+			li.addLast(to);
+		}
+		return li;
+	}
+	
+	@Algorithm
+	public int  connectedComponents(Graph g, GraphTool gt){
+		Iterator<Vertex> it = g.vertices();
+		int num = 0;
+		while(it.hasNext()){
+			Vertex v = it.next();
+			if (! v.has(Attribute.VISITED)) dfs(g,v,gt,num++);
+		}
+		return num;
+	}
+
+	private void dfs(Graph g, Vertex v, GraphTool gt, int num) {
+		// depth first search
 		// label the vertex 'v'
 		v.set(Attribute.VISITED,null);
 		v.set(Attribute.color,Color.GREEN);
+		v.set(Attribute.string,""+num);
 		gt.show(g);
 		Iterator<Edge> eIt = g.incidentEdges(v);
 		while (eIt.hasNext()) {
@@ -43,7 +93,7 @@ public class GraphExamples<V,E> {
 			Vertex w = g.opposite(e, v);
 			if ( ! w.has(Attribute.VISITED)){
 				e.set(Attribute.color, Color.GREEN);
-				dfs(g,w,gt);
+				dfs(g,w,gt,num);
 			}
 		}
 	}
@@ -89,7 +139,7 @@ public class GraphExamples<V,E> {
 		
 		// use graph Tool
 		
-		GraphTool t = new GraphTool(ge);
+		GraphTool t = new GraphTool(g,ge);
 
 		//    A__B     F
 		//      /|\   /|
