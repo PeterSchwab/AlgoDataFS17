@@ -58,13 +58,13 @@ public class GraphExamples<V,E> {
 		}
 		if ( ! found) return null;
 		LinkedList li = new LinkedList();
-		li.addLast(to);
+		li.addFirst(to);
 		while (to!=from){
 			Edge e=(Edge)to.get(Attribute.VISITED);
 			e.set(Attribute.color,Color.RED);
 			to = g.opposite(e,to);
 			gt.show(g);
-			li.addLast(to);
+			li.addFirst(to);
 		}
 		return li;
 	}
