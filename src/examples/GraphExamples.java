@@ -47,7 +47,33 @@ public class GraphExamples<V,E> {
 		s.set(Attribute.DISTANCE,0.0);
 		pq.replaceKey((Locator)s.get(Attribute.PQLOCATOR),0.0);
 		while ( ! pq.isEmpty()){
-			
+			Vertex cur = pq.removeMin().element();
+			// visualization stuff:
+			cur.set(Attribute.color,Color.GREEN);
+			if ((Double)cur.get(Attribute.DISTANCE)==Double.POSITIVE_INFINITY) break;
+			if (cur.has(Attribute.DISCOVERY)){
+				Edge e = (Edge)cur.get(Attribute.DISCOVERY);
+				e.set(Attribute.color,Color.GREEN);
+				gt.show(g); //step
+			}
+			// now find all neighbours of cur
+			double curDist = (Double)cur.get(Attribute.DISTANCE);
+			Iterator<Edge> eIt = g.incidentEdges(cur);
+			if (g.isDirected()) eIt = g.incidentOutEdges(cur);
+			while (eIt.hasNext()){
+				Edge e = eIt.next();
+				Vertex next= g.opposite(e, cur);
+				double weight = 1.0;
+				if (e.has(Attribute.weight)){
+					weight = (Double) e.get(Attribute.weight);
+				}
+				double newDist = weight + curDist;
+				if (newDist < (Double)next.get(Attribute.DISTANCE)){
+					next.set(Attribute.DISTANCE,newDist);
+					pq.replaceKey((Locator)next.get(Attribute.PQLOCATOR),newDist);
+					next.set(Attribute.DISCOVERY,e);
+				}
+			}
 		}
 	}
 	
