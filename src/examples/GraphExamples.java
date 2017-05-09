@@ -31,6 +31,25 @@ public class GraphExamples<V,E> {
 		while(it.hasNext()) if ( ! it.next().has(Attribute.VISITED)) return false;
 		return true;
 	}
+
+	@Algorithm(vertex=true)
+	public void dijkstra(Graph g, Vertex s, GraphTool gt){
+		// label all vertices by its current distance
+		// and put them to a priority queue (with distance as key)
+		// add the priorityqueue locator as an attribute to the vertex!
+		PriorityQueue<Double,Vertex> pq = new MyPriorityQueue<Double, Vertex>();
+		Iterator<Vertex> it = g.vertices();
+		while (it.hasNext()){
+			Vertex v = it.next();
+			v.set(Attribute.DISTANCE,Double.POSITIVE_INFINITY);
+			v.set(Attribute.PQLOCATOR,pq.insert(Double.POSITIVE_INFINITY,v));
+		}
+		s.set(Attribute.DISTANCE,0.0);
+		pq.replaceKey((Locator)s.get(Attribute.PQLOCATOR),0.0);
+		while ( ! pq.isEmpty()){
+			
+		}
+	}
 	
 	@Algorithm(vertex=true,vertex2=true)
 	public java.util.List findPath(Graph g, Vertex from, Vertex to, GraphTool gt){

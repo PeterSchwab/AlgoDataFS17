@@ -24,7 +24,7 @@ public class MyPriorityQueue<K extends Comparable<? super K>, E> implements
 		}
 	}
 
-	private PQLoc<K,E> [] heap = new PQLoc[1000000];
+	private PQLoc<K,E> [] heap = new PQLoc[10];
 	private int size=0; // we start at position 1 in our heap
 
 	private PQLoc checkAndCast(Locator<K,E> p) {
