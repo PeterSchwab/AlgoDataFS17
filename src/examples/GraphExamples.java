@@ -24,6 +24,31 @@ public class GraphExamples<V,E> {
 	// (Argumente:  Graph, Vertex, Vertex, GraphTool)
 	// @Algorithm(vertex=true,vertex2=true) 
 	
+
+	@Algorithm
+	public void kruskal(Graph g, GraphTool gt){
+		// give a cluster to all vertices
+		Iterator<Vertex> it = g.vertices();
+		while (it.hasNext()){
+			Vertex v = it.next();
+			List cluster = new MyLinkedList<Vertex>();
+			v.set(Attribute.CLUSTER,cluster);
+			cluster.insertLast(v);
+		}
+		// now put all edges to a priorityqueue
+		MyPriorityQueue<Double,Edge> pq = new MyPriorityQueue<>();
+		Iterator<Edge> eIt = g.edges();
+		while (eIt.hasNext()){
+			Edge e = eIt.next();
+			double length = 1.0;
+			if (e.has(Attribute.weight)){
+				length = (Double)e.get(Attribute.weight);
+				pq.insert(length, e);
+			}
+		}
+
+	}
+	
 	@Algorithm
 	public boolean isConnected(Graph g, GraphTool gt){
 		Iterator<Vertex> it = g.vertices();
@@ -113,6 +138,7 @@ public class GraphExamples<V,E> {
 		}
 		return li;
 	}
+	
 	
 	@Algorithm
 	public int  connectedComponents(Graph g, GraphTool gt){
