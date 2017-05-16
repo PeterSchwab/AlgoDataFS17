@@ -31,7 +31,7 @@ public class GraphExamples<V,E> {
 		Iterator<Vertex> it = g.vertices();
 		while (it.hasNext()){
 			Vertex v = it.next();
-			List cluster = new MyLinkedList<Vertex>();
+			List<Vertex> cluster = new MyLinkedList<>();
 			v.set(Attribute.CLUSTER,cluster);
 			cluster.insertLast(v);
 		}
@@ -46,7 +46,33 @@ public class GraphExamples<V,E> {
 				pq.insert(length, e);
 			}
 		}
-
+		int cnt=0; // we count the MSF edges
+		while ( ! pq.isEmpty() && cnt < g.numberOfVertices()-1){
+			Edge e = pq.removeMin().element();
+			// get the endpoints of e
+			Vertex[] ePoints = g.endVertices(e);
+			List cluster_0 = (List)ePoints[0].get(Attribute.CLUSTER);
+			List cluster_1 = (List)ePoints[1].get(Attribute.CLUSTER);
+			if (cluster_0 != cluster_1){
+				// we found an MST edge 
+				e.set(Attribute.color,Color.RED);
+				gt.show(g);
+				if (cluster_1.size() < cluster_0.size()){
+					// swap 
+					List tmp = cluster_0;
+					cluster_0 =  cluster_1;
+					cluster_1 = tmp;
+					cnt++;
+				}
+				// move all vertices from cluster_0 (the smaller) to cluster_1
+				Iterator<Vertex> cit = cluster_0.elements();
+				while (cit.hasNext()){
+					Vertex v = cit.next();
+					v.set(Attribute.CLUSTER,cluster_1);
+					cluster_1.insertLast(v);					
+				}
+			}
+		}
 	}
 	
 	@Algorithm

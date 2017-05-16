@@ -1,5 +1,6 @@
 package examples;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 
@@ -8,7 +9,7 @@ import java.util.Iterator;
  *
  * @param <E> the type of the elements of this list
  */
-public interface List<E>{
+public interface List<E> extends Serializable{
 	/**
 	 * @return the first position of this list or 'null'
 	 */
