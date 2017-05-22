@@ -245,6 +245,16 @@ public class MyTree<E> implements Tree<E> {
 		Iterator<TNode> it = cList.elements();
 		while (it.hasNext()) findDeepest(it.next(), depth+1);
 	}
+	public void print(){
+		if (size != 0) print(root,"");
+	}
+
+
+	private void print(TNode r, String ind) {
+		System.out.println(ind+r.elem);
+		Iterator<TNode> it = r.children.elements();
+		while (it.hasNext()) print(it.next(),ind+"-");
+	}
 
 	public static void main(String[] args) {
 		MyTree<String> t = new MyTree<>();
@@ -261,6 +271,7 @@ public class MyTree<E> implements Tree<E> {
 		while (it.hasNext()) System.out.println(it.next());
 		System.out.println(t.height());
 		System.out.println(t.deepestNode().element());
+		t.print();
 	}
 
 }
